@@ -58,9 +58,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 								</dd>
 								<dd>							
 									<i class="w100 dis-ib">批号</i>
-									<input type="text" class="defaultOption minBatchNo">
-									<input type="text" class="defaultOption maxBatchNo">
-									<!-- <select class="defaultOption minBatchNo">
+									<select class="defaultOption minBatchNo">
 										<option>Z150501</option>
 										<option>Z150502</option>
 										<option>Z150503</option>
@@ -70,9 +68,9 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 										<option>Z150507</option>
 										<option>Z150508</option>
 										
-									</select> -->
-									
-									<!-- <select class="defaultOption maxBatchNo">
+									</select>
+									-
+									<select class="defaultOption maxBatchNo">
 										<option>Z150501</option>
 										<option>Z150502</option>
 										<option>Z150503</option>
@@ -81,7 +79,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 										<option>Z150506</option>
 										<option>Z150507</option>
 										<option>Z150508</option>
-									</select> -->
+									</select>
 								</dd>
 								
 								
@@ -176,7 +174,6 @@ $("#yieldAnalysisBtn").click(function(){
 		 data = {};
 	data.minBatchNo = $.trim(minBatchNo);
 	data.maxBatchNo = $.trim(maxBatchNo);
-	option.yAxis.title = $.trim($('#intermidates').val());
 	$.each(option.series,function(i,item) {
 		item.data = [];
 	});
@@ -188,29 +185,14 @@ $("#yieldAnalysisBtn").click(function(){
 		dataType: 'json',
 		async : false,
 		success : function(data) {
-			console.log(data);
-			var one = true;
 			option.xAxis.categories = [];
 			option.series[0].data = [];
 			$(data).each(function(i,item) {
-				if(item.fYyQty) {
-					var datetime =  dateFormat(item.tmCyEnd);
-					if(one) {
-						option.title.text = '金银花提取液收率分析(' + datetime.substr(0,4) +')';
-						one = false;
-					}
-					// option.xAxis.categories.push(item.sBatchNumber + '  ' + dateFormat(item.tmCyEnd));
-					// option.series[0].data.push(item.fZlyTotalVol);
-					
-					option.xAxis.categories.push( item.sBatchNumber + ' ' + datetime.substring(5));
-
-					option.series[0].data.push(item.fYyQty);
-				}
+				option.xAxis.categories.push(item.sBatchNumber)
+				option.series[0].data.push(item.fZlyTotalVol);
 			})
 		}
 	});
-	console.log(option.series[0].data);
-
 	avgYield();
 	chart = new Highcharts.Chart(option);
 	showHighcharts($('#container'));
@@ -244,7 +226,6 @@ $("#typeNames").click(function(){
 		data={};
 	data.typeName=typeName;
 	var returnData=getJSON(url,data);
-	console.log(returnData);
 	var intermidates=returnData.intermidates;
 	$("#intermidates").empty();
 	$.each(intermidates,function(){
@@ -267,23 +248,11 @@ $('#intermidates').on('change', function() {
 		dataType: 'text',
 		async : false,
 		success : function(data) {
-			console.log(data);
+			
 		}
 	});
 	
 }) 
-
-function dateFormat(datetime) {
-	var datetime = new Date(parseInt(datetime)),
-		year = datetime.getFullYear(),
-		month = datetime.getMonth() + 1 < 10?'0' + (datetime.getMonth() + 1):datetime.getMonth() + 1,
-		day = datetime.getDate() < 10 ? '0' + datetime.getDate():datetime.getDate(),
-		hour = datetime.getHours()<10 ?'0' + datetime.getHours():datetime.getHours(),
-		min = datetime.getMinutes()<10?'0' + datetime.getMinutes():datetime.getMinutes(),
-		sec = datetime.getSeconds()<10?'0' + datetime.getSeconds():datetime.getSeconds();
-	return year + '/' + month + '/' + day + '  ' + hour + ':' + min;
-	
-}
 </script> 	
 </body>
 
