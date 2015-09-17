@@ -10,7 +10,7 @@
 	      <jsp-property-group>   
 	   <description>Special property group for html Configuration JSP example.</description>   
 	   <display-name>JSPConfiguration</display-name>   
-	   <url-pattern>*.html</url-pattern>   
+	   <url-pattern>*.htm</url-pattern>   
 	   <el-ignored>true</el-ignored>   
 	   <page-encoding>UTF-8</page-encoding>   <!-- 此处为项目使用的编码方式 --> 
 	   <scripting-invalid>false</scripting-invalid>   

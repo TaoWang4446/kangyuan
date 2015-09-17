@@ -32,5 +32,11 @@ fieldset.zs{
 	height:400px;
 	margin-top:30px;
 }
+.zs_ser {
+	width:80px;
+	height:20px;
+	border:1px solid #ddd;
+	padding:0 5px;
+}
 
 

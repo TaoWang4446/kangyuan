@@ -4,7 +4,7 @@
   "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
 <generatorConfiguration>
     <!-- classPathEnttry:数据库的JDBC驱动的jar包地址 -->
-  <classPathEntry location="E:\cyz\icloud\soft\OpenSource\classes12.jar" />
+  <classPathEntry location="E:\workspace\kanion\src\classes12.jar" />
   <context id="DB2Tables" targetRuntime="MyBatis3">
       <!-- 数据库链接的信息：驱动类、链接地址、用户名、密码 --> 
     <jdbcConnection 
@@ -18,21 +18,21 @@
       <property name="forceBigDecimals" value="false" />
     </javaTypeResolver>
 	<!-- 生成model的位置 -->
-    <javaModelGenerator targetPackage="com.kanion.www.model" targetProject="kanion\src">
+    <javaModelGenerator targetPackage="com.kanion.www.model" targetProject="E:\workspace\kanion\src">
       <property name="enableSubPackages" value="true" />
       <property name="trimStrings" value="true" />
     </javaModelGenerator>
 	<!-- 生成mapping的位置 -->
-    <sqlMapGenerator targetPackage="com.kanion.www.mapping"  targetProject="kanion\src">
+    <sqlMapGenerator targetPackage="com.kanion.www.mapping"  targetProject="E:\workspace\kanion\src">
       <property name="enableSubPackages" value="true" />
     </sqlMapGenerator>
 	<!-- 生成dao的位置 -->
-    <javaClientGenerator type="XMLMAPPER" targetPackage="com.kanion.www.dao"  targetProject="kanion\src">
+    <javaClientGenerator type="XMLMAPPER" targetPackage="com.kanion.www.dao"  targetProject="E:\workspace\kanion\src">
       <property name="enableSubPackages" value="true" />
     </javaClientGenerator>
 	<!-- tableName:用于自动生成代码的数据库表；domainObjectName:对应于数据库表的javaBean类名 ,schema对应所属用户
 	在自动建表过程中，如果发现表找不到，通常是因为是在navigater中建的表，会自动加双引号，最好不要在navigator中建立表。
 	自动生成过程中出现的必须包含在同一个实体内的警告也是莫名其妙的错误。-->
-    <table tableName="USER" domainObjectName="User" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false" />
+    <table tableName="KY_GY_DB" domainObjectName="JyhTqDB" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false" />
   </context>
 </generatorConfiguration>

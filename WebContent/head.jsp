@@ -137,9 +137,9 @@ $(".tool").click(function(){
 		alert("此模块正在开发中...")
 		return;
 	}
-		
-	if(id=="trendAnalysis" || id=="yieldAnalysis"){
-		location.href = basePath + id + "/init.htm";
+	// location.href = basePath + id + ".jsp";
+	if(id=="trendAnalysis" || id=="yieldAnalysis" || id == "rsdAnalysis"){
+		location.href = basePath + id + "/init.json";
 	}else{
 		location.href = basePath + id + ".jsp";
 	}

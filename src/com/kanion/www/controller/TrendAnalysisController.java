@@ -24,10 +24,17 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.alibaba.fastjson.JSONArray;
 import com.kanion.www.highchart.Spline;
+import com.kanion.www.model.JyhTqBw;
+import com.kanion.www.model.ParaIndex;
+import com.kanion.www.service.JyhTqBwService;
+import com.kanion.www.service.JyhTqDBService;
+import com.kanion.www.service.ParaIndexService;
 import com.kanion.www.service.TrendAnalysisService;
 import com.kanion.www.util.ProjectProperties;
 
@@ -40,12 +47,26 @@ import com.kanion.www.util.ProjectProperties;
 @Controller
 @RequestMapping("trendAnalysis")
 public class TrendAnalysisController {
-	
+	private String tableName;
+	private String pfield;
 	static Logger logger=Logger.getLogger(TrendAnalysisController.class.getName());
 	
-	
+	private ParaIndexService paraIndexService;
+	@Autowired
+	public void setParaIndexService(ParaIndexService paraIndexService) {
+		this.paraIndexService = paraIndexService;
+	}
 	@Autowired
 	private TrendAnalysisService mTrendAnalysisService;
+//	private JyhTqBwService jyhTqBwService;
+//	@Autowired
+//	public void setJyhTqBwService(JyhTqBwService jyhTqBwService) {
+//		this.jyhTqBwService = jyhTqBwService;
+//	}
+	
+	//选取工段
+	@Autowired
+	private JyhTqDBService jyhTqDBService;
 	/**
 	 * 
 	* @Title: init
@@ -134,7 +155,6 @@ public class TrendAnalysisController {
 		List<String> arguments=mTrendAnalysisService.getArguments(typeName, process, phases);
 		ret.put("arguments", arguments);
 		return ret;
-		
 	}
 	
 	
@@ -162,4 +182,68 @@ public class TrendAnalysisController {
 		return ret;
 		
 	}
+	/**
+	 * 根据品名获取对应的工段
+	 */
+	@RequestMapping("getStageName")
+	@ResponseBody
+	public String getStageName(@RequestParam(value="processName",required=true)String processName){
+		List<String> stageName = jyhTqDBService.getStage(processName);
+		System.out.println(JSONArray.toJSONString(stageName));
+		return JSONArray.toJSONString(stageName);
+	}
+	
+	@RequestMapping("getProcessAndBo")
+	@ResponseBody
+	public String getProcessAndBo(@RequestParam(value="productName",required=true)String productName ) {
+		List<Map<String,Object>> procesBoes = jyhTqDBService.getProcessAndBo(productName);
+		return JSONArray.toJSONString(procesBoes);
+	}
+	
+	@RequestMapping("getParam")
+	@ResponseBody
+	public String getParam(@RequestParam(value="stageName",required=true)String stageName) {
+		List<String> paraName = jyhTqDBService.getParam(stageName);
+		return JSONArray.toJSONString(paraName);
+	}
+	
+//	@RequestMapping("getTrendTableName")
+//	@ResponseBody
+//	public String getTableName(@RequestParam(value="productName", required=true)String productName,
+//			@RequestParam(value="processName", required=true)String processName,
+//			@RequestParam(value="stageName",required=true)String stageName, 
+//			@RequestParam(value="paraName",required=true)String paraName) {
+//		ParaIndex paraIndex = paraIndexService.getTableNameAndFiled(productName, processName, stageName, paraName);
+//		tableName = paraIndex.getsTableName();
+//		pfield = paraIndex.getsParaField();
+//		return pfield;
+//	}
+//	
+//	@RequestMapping("getCertainParam")
+//	@ResponseBody
+//	public String getCertainParam(@RequestParam("batchNo")String batchNo) {
+//		
+//		List<JyhTqBw> oo =  jyhTqBwService.getSomeParam("KANION."+tableName, "'" + batchNo + "'");
+////		jyhTqBwService.updateDate();
+//		return JSONArray.toJSONString(oo);
+//		
+//	}
+	@RequestMapping("getDeviceName")
+	@ResponseBody
+	public String getDeviceName(@RequestParam(value="batchName",required=true)String batchName) {
+		List<String> devices = jyhTqDBService.getDevice(batchName);
+		return JSONArray.toJSONString(devices);
+	}
+	
+	@RequestMapping("drawChart")
+	@ResponseBody
+	public String drawChart(@RequestParam(value="productName",required=true)String productName,
+							@RequestParam(value="processName", required=true)String processName,
+							@RequestParam(value="stageName", required=true)String stageName,
+							@RequestParam(value="paraName", required=true)String paraName,
+							@RequestParam(value="batchName", required=true)String batchName) {
+		List<Map<String,Object>> valueAndUnit = jyhTqDBService.getValueAndUnit(productName, processName, stageName, paraName, batchName);
+		return JSONArray.toJSONString(valueAndUnit);
+	}
+	
 }

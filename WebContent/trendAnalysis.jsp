@@ -36,16 +36,13 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 							</dt>
 							<dd><i class="w100 dis-ib">品名</i>
 								<select class="defaultOption" id="typeNames">
+									<option value="-1">请选择</option>
 									<c:forEach items="${typeNames}" var="typeName">
 										<option>${typeName}</option>
 									</c:forEach>
 								</select>
 							</dd>
-							<dd>							
-								<i class="w100 dis-ib">批号</i>
-								<select class="defaultOption" id="batchNos">
-								</select>
-							</dd>
+							
 							<dd>								
 								<i class="w100 dis-ib">工段</i>
 								<select class="defaultOption" id="processes">
@@ -53,16 +50,41 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 							</dd>
 							<dd>	
 								<i class="w100 dis-ib">阶段</i>
-								<select class="defaultOption" id="phases" multiple="multiple" SIZE="2" style="height:40px;">
+								<!-- <select class="defaultOption" id="phases" multiple="multiple" SIZE="2" style="height:40px;"> -->
+								<select class="defaultOption" id="phases">
 								</select>
-								<button type="button" id="phaseSelectBtn" class="orange-btn w200 mt15 floatRight" >选择阶段</button>
+								<!-- <button type="button" id="phaseSelectBtn" class="orange-btn w200 mt15 floatRight" >选择阶段</button> -->
 							</dd>
+
 							<dd>	
 								<i class="w100 dis-ib">生产参数选取</i>
 								<select class="defaultOption" id="arguments">
 								</select>							
 								<button type="button" id="trendAnalysisBtn" class="orange-btn w200 mt15 floatRight" >趋势显示</button>
-							</dd>							
+							</dd>
+							<dd>							
+								<i class="w100 dis-ib">批号</i>
+								<!-- <select type="text" class="defaultOption" id="batchNos">
+									<option >请选择</option>
+								</select> -->
+								<input type="text" class="defaultOption" id="batchNos">
+							</dd>
+							<dd>
+
+								<input type="button" class="w100 dis-ib guan-btn" value="获取罐">
+								<!-- <button class="w100 dis-ib">提取罐选取</button> -->
+								<ul class="guan-list">
+									<!-- <li>罐1 <input type="checkbox" name="t3001" value="T3001A"></li>
+									<li>罐2 <input type="checkbox" name="t3001" value="T3001B"></li>
+									<li>罐3 <input type="checkbox" name="t3001" name="t3001" value="T3001C"></li>
+									<li>罐4 <input type="checkbox" name="t3001" value="T3001D"></li>
+									<li>罐5 <input type="checkbox" name="t3001" value="T3001E"></li>
+									<li>罐6 <input type="checkbox" name="t3001" value="T3001F"></li>
+									<li>罐7 <input type="checkbox" name="t3001" value="T3001G"></li>
+									<li>罐8 <input type="checkbox" name="t3001" value="T3001H"></li>
+									<li>罐9 <input type="checkbox" name="t3001" value="T3001I"></li> -->
+								</ul>
+	 						</dd>							
 						</dl>						
 					</div>	
 	
@@ -82,205 +104,241 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 
 
 
-</body>
+<script type="text//javascript"></script>
 <script language="JavaScript" type="text/javascript">
-$(function(){
-	var pageName=$("#pageName").val();
-	loadHead(pageName);
-});
+	var basePath=$("#basePath").val(),
+		params = '',
+		optionData = [],
+		cagries = [],
+		yTitle = '', 
+		seriesName = '',
+		title = '',
+		unit = '',
+		$typeName = $('#typeNames'),
+		$process = $("#processes"),
+		$phases = $('#phases'),
+		$arguments = $('#arguments'),
+		$batchNos = $('#batchNos'),
+		series = [];
+	$(function(){
+		var pageName=$("#pageName").val();
+		loadHead(pageName);
+	});
 
 
-var basePath=$("#basePath").val();
 //点击趋势显示按钮
-/*
+
 $("#trendAnalysisBtn").click(function(){		
-	var url=basePath+"trendAnalysis/getChart.json";
-	var typeName=$("#typeNames").val();
-	var process=$("#processes").val();
-	var phase="";
-	$("#phases option:selected").each(function(){
-        phase=phase+$(this).text()+",";
-    });
-	phase=phase.substring(0, phase.length-1);
-	var argument=$("arguments").val();
-	var data={};
-	data["typeName"]=typeName;
-	data["process"]=process;
-	data["phase"]=phase;
-	data["argument"]=argument;
-	var returnData=getJSON(url,data);
+	var url=basePath+"trendAnalysis/drawChart.json",
+		typeName = $.trim($typeName.val()),
+		process = $.trim($process.val()),
+		stage = $.trim($phases.val()),
+		argument = $.trim($arguments.val()),
+		batchNo = $.trim($batchNos.val()),
+		data = {},
+	    $guansSelect = $('.guan-list').find('input:checked');
+	    series = [];
+	$guansSelect.each(function(i, item) {
+		var obj = {
+			name:$(this).val(),
+			data:[]
+		}
+		series.push(obj);
+	});
+
+	if(parseInt(typeName) < 0) {
+		alert('请选择品名');
+		return;
+	}
+	if(parseInt(process) < 0) {
+		alert('请选择工段');
+		return;
+	}
+	if(stage === '请选择') {
+		alert('请选择阶段');
+		return;
+	}
+	if(parseInt(argument) < 0) {
+		alert('请选择生产参数');
+		return;
+	}
+	if(parseInt(batchNo) < 0) {
+		alert('请选择批号');
+		return;
+	}
+	data.productName = typeName;
+	data.processName = process;
+	data.stageName = stage;
+	data.paraName = argument;
+	data.batchName = batchNo;
+	title = typeName;
+	yTitle = argument;
+	$.ajax({
+		type:'POST',
+		url: url,
+		data: data,
+		async: false,
+		dataType: 'text',
+		success: function(data) {
+			data = $.parseJSON(data);
+			//console.log(data);
+			optionData = [];
+			cagries = [];
+			unit = data[0].S_UNIT;
+			 yTitle += ' (' + unit + ')';
+			$(data).each(function(i, item) {
+				$(series).each(function(index) {
+					if(item.S_DEVICE_CODE === series[index].name) {
+						series[index].data.push(item.N_VALUE);
+					}
+				})
+				optionData.push(item.N_VALUE);
+				cagries.push(timeFormat(item.TM_CURT));
+			})
+			console.log(series);
+			drawAction();
+			showHighcharts($('#container'));
+
+		}
+	})
 	//showHighcharts($('#container'));
 });	
-*/
+
 
 
 //显示品名和工段
-$("#typeNames").click(function(){
-	var url=basePath+"trendAnalysis/getBatchNoAndProcess.json";
-	var typeName=$("#typeNames").val();
-	var data={};
-	data["typeName"]=typeName;
-	var returnData=getJSON(url,data);
-	var batchNos=returnData.batchNos;
-	var processes=returnData.processes;
-	$("#batchNos").empty();
-	$.each(batchNos,function(){
-		$("#batchNos").append("<option>"+this+"</option>");
-	});
+$("#typeNames").on('change', function() {
 	
-	$("#processes").empty();
-	$.each(processes,function(){
-		$("#processes").append("<option>"+this+"</option>");
-	});
-	
-});
-
-
-//显示阶段
-$("#processes").click(function(){
-	var url=basePath+"trendAnalysis/getPhasesByTypeNameAndProcess.json";
-	var typeName=$("#typeNames").val();
-	var process=$("#processes").val();
-	var data={};
-	data["typeName"]=typeName;
-	data["process"]=process;
-	var returnData=getJSON(url,data);
-	
-	var phases=returnData.phases;
-		
-	$("#phases").empty();
-	$.each(phases,function(){
-		$("#phases").append("<option>"+this+"</option>");
-	});
+	var url = basePath + "trendAnalysis/getProcessAndBo.json",
+		typeName = $("#typeNames").val(),
+		$batchNos = $('#batchNos'),
+		data = {},
+		proName = '';
+	data.productName = $.trim(typeName);
+	$phases.empty();
+	$process.empty();
+	$batchNos.empty();
+	$arguments.empty();
+	$('.guan-list').html('');
+	$process.append('<option value="-1">请选择</option>');
+	$batchNos.append('<option value="-1">请选择</option>');
+	$phases.append('<option value="-1">请选择</option>');
+	$arguments.append('<option value="-1">请选择</option>');
+	$.ajax({
+		type:'POST',
+		url: url,
+		data: data,
+		async: false,
+		dataType: 'text',
+		success: function(data){
+			data = $.parseJSON(data);
+			$(data).each( function(index, item) {
+				if(item.S_PROCESS_NAME !== proName) {
+					$process.append('<option>' + $.trim(item.S_PROCESS_NAME) + '<option/>');
+					proName = item.S_PROCESS_NAME;
+				}
+				// $batchNos.append('<option>' + $.trim(item.S_BATCH_NUMBER) + '<option/>');
+				console.log(item.S_BATCH_NUMBER);
+			})
+		}
+	})
 	
 });
 
-//显示参数,阶段可多选
-$("#phaseSelectBtn").click(function(){
-	var url=basePath+"trendAnalysis/getArgumentsByTypeNameProcessPhases.json";
-	var typeName=$("#typeNames").val();
-	var process=$("#processes").val();
-	var phase="";
-	$("#phases option:selected").each(function(){
-        phase=phase+$(this).text()+",";
-    });
-	phase=phase.substring(0, phase.length-1);
-	var data={};
-	data["typeName"]=typeName;
-	data["process"]=process;
-	data["phase"]=phase;
-	var returnData=getJSON(url,data);
+$('.intro').on('change', '#processes', function() {
+	var url = basePath + "trendAnalysis/getStageName.json",
+		data = {},
+		processName = $.trim($process.val());
+	data.processName = processName;
+	$phases.empty();
+	$('.guan-list').html('');
+	$phases.append("<option>请选择</option>");
+	$.ajax({
+		type:'POST',
+		url: url,
+		data: data,
+		async: false,
+		dataType: 'text',
+		success: function(data) {
+			data = $.parseJSON(data);
+			$(data).each(function(index,item) {
+				$phases.append("<option>" + item + "</option");
+			})
+		}
+	})
+})
+.on('change', '#phases', function() {
+	var url = basePath + "trendAnalysis/getParam.json",
+		stageName = $.trim( $phases.val() ),
+		data = {};
+	data.stageName = stageName;
+	$arguments.empty();
+	$('.guan-list').html('');
+	$arguments.append('<option value="-1">请选择</option>');
+	$.ajax({
+		type:'POST',
+		url: url,
+		data: data,
+		async: false,
+		dataType: 'text',
+		success : function(data) {
+			data = $.parseJSON(data);
+			$(data).each(function(index, item) {
+				$arguments.append('<option>' + item +'</option>');
+			})
+		}
+	})
+
+})
+.on('click','#batchNos', function() {
+	$('.guan-list').html('');
+})
+.on('click','.guan-btn', function() {
+	var batchNo = $.trim($('#batchNos').val()),
+		data = {},
+		url = '';
+	if(!batchNo) {
+		alert('请先输入批号');
+		return;
+	}
+	data.batchName = batchNo;
+	url = basePath + "trendAnalysis/getDeviceName.json";
+	$('.guan-list').empty();
+	$.ajax({
+		type:'POST',
+		url: url,
+		data: data,
+		async: false,
+		dataType: 'text',
+		success : function(data) {
+			data = $.parseJSON(data);
+			if(!data.length) {
+				alert('该批号不存在，请重新输入');
+				return;
+			}
+			$(data).each(function(index, item) {
+				$('.guan-list').append('<li>罐' + item + '  <input type="checkbox" name="t3001" value="'+ item +'"></li>')
+			})
+		}
+	})
+})
+
+function timeFormat(datetime) {
+	// var tt=new Date(parseInt(datetime)).toLocaleString().replace(/年|月/g, "-").replace(/日/g, " ") ;
+	var tt = new Date(parseInt(datetime));
+	return tt.getFullYear() + "/" + (tt.getMonth() + 1) + "/" + tt.getDate() +
+			"_" + tt.getHours() + ":" + tt.getMinutes() + ":" + tt.getSeconds();
 	
-	var arguments=returnData.arguments;
-		
-	$("#arguments").empty();
-	$.each(arguments,function(){
-		$("#arguments").append("<option>"+this+"</option>");
-	});
-	
-});
-var basePath=$("#basePath").val();
-//点击趋势显示按钮
-var params;
-$("#trendAnalysisBtn").click(function(){
-    params = $("#arguments option:selected").val();
-    drawAction();
-	showHighcharts($('#container'));
-});	
+}
 
 function drawAction() {
     $('#container').highcharts({
     	chart: {
             type: 'spline',
-            events: {
-                load: function () {
-               	 if(params == "第一次提取过程升温过程蒸汽压力（MPa）"){
-               		this.yAxis[0].setTitle({
-                        text: '蒸汽压力(MPa)',
-                        style:{
-                        	color:'#64B9C9',
-    		        		fontSize:'14px',
-    					    fontFamily:'微软雅黑'
-                        }
-                    });
-               		this.setTitle({text:"第一次提取过程升温过程蒸汽压力（MPa）"});
-               		this.series[0].update({
-        	            name: 'T3001A',
-        	            data: [0.28, 0.27, 0.29, 0.28,0.27,0.28,0.110,0.108,0.105,0.107,0.103,
-        	                   0.101,0.099,0.100,0.098,0.096,0.099,0.098,0.100,0.092]
-        	        });
-               		this.series[1].update({
-        	        	name: 'T3001B',
-        	            data: [0.29, 0.28, 0.27, 0.28,0.29,0.27,0.100,0.0928,0.0905,0.0907,0.0903,
-        	                   0.0905,0.091,0.0880,0.089,0.090,0.091,0.092,0.093,0.091]
-        	        });
-               		this.series[2].update({
-        	        	name: 'T3001C',
-        	            data: [0.285, 0.291, 0.285, 0.281,0.279,0.282,0.101,0.098,0.095,0.091,0.090,
-        	                   0.091,0.089,0.090,0.088,0.090,0.089,0.088,0.089,0.090]
-        	        });
-               		this.series[3].update({
-        	        	name: 'T3001D',
-        	            data: [0.288, 0.281, 0.290, 0.287,0.289,0.285,0.108,0.106,0.104,0.100,0.098,
-        	                   0.096,0.097,0.095,0.092,0.090,0.088,0.090,0.089,0.088]
-        	        });
-               		this.series[4].update({
-        	        	name: 'T3001E',
-        	            data: [0.293, 0.285, 0.291, 0.286,0.292,0.286,0.105,0.102,0.103,0.097,0.093,
-        	                   0.091,0.090,0.088,0.089,0.090,0.091,0.089,0.090,0.089]
-        	        });
-               		this.series[5].update({
-        	        	name: 'T3001F',
-        	            data: [0.295, 0.282, 0.292, 0.283,0.290,0.282,0.109,0.106,0.102,0.101,0.094,
-        	                   0.090,0.091,0.089,0.088,0.091,0.089,0.088,0.091,0.089]
-        	        });
-               	 } else {
-               		this.yAxis[0].setTitle({
-                        text: '温度(°C)',
-                        style:{
-                        	color:'#64B9C9',
-    		        		fontSize:'14px',
-    					    fontFamily:'微软雅黑'
-                        }
-                    });
-               		this.setTitle({text:"热毒宁注射液金银花提取第一次提取过程升温过程温度上（℃）"});
-               		this.series[0].update({
-        	            name: 'T3001A',
-        	            data: [19.5, 24.8, 34.7, 50.4,70.5,96.2,100.2,99.8,101.2,100.3,100.4,
-        	                   100.5,100.3,101.1,101.7,100.9,101.4,100.8,101.1,100.9]
-        	        });
-               		this.series[1].update({
-        	        	name: 'T3001B',
-        	            data: [20.5, 25.8, 35.7, 51.4,71.5,97.2,101.2,100.8,101.8,101.3,100.1,
-        	                   101.5,100.0,100.1,101.2,101.2,100.4,101.3,101.5,101.2]
-        	        });
-               		this.series[2].update({
-        	        	name: 'T3001C',
-        	            data: [19.9, 25.1, 36.2, 52.1,71.1,94.9,101.0,99.9,101.8,101.3,101.4,
-        	                   101.5,101.3,100.8,101.2,101.6,101.4,101.2,101.7,101.2]
-        	        });
-               		this.series[3].update({
-        	        	name: 'T3001D',
-        	            data: [19.8, 25.3, 36.2, 51.8,71.1,97.3,101.7,100.8,101.7,100.9,100.7,
-        	                   101.0,101.8,101.5,101.0,101.3,101.1,102.0,101.3,101.9]
-        	        });
-               		this.series[4].update({
-        	        	name: 'T3001E',
-        	            data: [20.8, 26.8, 35.9, 52.3,72.6,98.0,101.6,101.2,100.9,101.7,101.6,
-        	                   101.2,101.1,100.9,101.1,100.8,101.9,101.1,100.7,101.9]
-        	        });
-               		this.series[5].update({
-        	        	name: 'T3001F',
-        	            data: [21.5, 26.8, 36.3, 53.4,72.9,98.5,101.8,101.2,101.9,102.0,101.8,
-        	                   100.4,100.7,100.9,101.1,101.2,101.9,101.2,101.9,101.5]
-        	        });             
-               	 }
-                }
-            }
         },
         title: {
         	margin:40,
-            text: '金银花提取-提取罐上部温度',
+            text: title,
             style:{
         		color:'#64B9C9',
         		fontSize:'18px',
@@ -289,21 +347,22 @@ function drawAction() {
         },
         xAxis: {
         	title: {
-                text: '生产过程时间点(2015-5-1)',
+                text: '生产过程时间点',
                 style:{
 	        		color:'#64B9C9',
 	        		fontSize:'14px',
 				    fontFamily:'微软雅黑'
 	        	}
             },
-            categories: ['9:03', '9:06', '9:09', '9:12','9:15', '9:18', '9:21', '9:24'
-                         ,'9:27', '9:30', '9:33','9:36', '9:39', '9:42', '9:45',
-                         , '9:48', '9:51', '9:54','9:57', '10:00']
+            categories: cagries
+        },
+        tooltip: {
+        	valueSuffix: ' (' + unit + ')'
         },
         yAxis: {
         	min:0,
             title: {
-                text: '温度(°C)'
+                text: yTitle
             },
             plotLines: [{
                 value: 0,
@@ -314,13 +373,14 @@ function drawAction() {
         credits:{
             enabled:false // 禁用版权信息
         },
-        tooltip: {
-            valueSuffix: '°C'
-        },
-        series:[{},{},{},{},{},{}],
+        // tooltip: {
+        //     valueSuffix: '°C'
+        // },
+        // series:[{},{},{},{},{},{}],
+        series: series
     });
-};
+}; 
 			
 </script>  	
-
+</body>
 </html>

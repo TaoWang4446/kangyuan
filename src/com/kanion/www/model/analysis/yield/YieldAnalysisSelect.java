@@ -2,10 +2,14 @@ package com.kanion.www.model.analysis.yield;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.alibaba.fastjson.JSON;
+import com.kanion.www.service.MidIndexService;
 import com.kanion.www.util.Util;
 
 public class YieldAnalysisSelect {
+	
 
 	/**
 	 * 类初始化操作，在类初始化的时候实例化单例。
@@ -15,7 +19,6 @@ public class YieldAnalysisSelect {
 		String jsonString=Util.readFile("com/kanion/www/json/yield.json");
 		INSTANCE=JSON.parseObject(jsonString,YieldAnalysisSelect.class);
 	}
-	
 	
 	private List<TypeName> typeNames;
 	

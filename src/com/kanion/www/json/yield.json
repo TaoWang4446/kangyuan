@@ -2,24 +2,30 @@
 	"typeNames": 
 	[
 		{
-			"name": "热毒宁注射液金青提取物",
+			"name": "热毒宁注射液青金提取物",
 			"colName": "",
 			"intermidates": 
 			[
 				{
-					"name":"金银花提取液",
+					"name":"金银花蒸馏液",
 					"colName":"",
 					"unit":"体积",
 					"unit_flag":""
 				},
 				{
-					"name":"蒸馏液",
+					"name":"金银花第一次提取液",
 					"colName":"",
 					"unit":"体积",
 					"unit_flag":""
 				},
 				{
-					"name":"金银花第一次提取三效浓缩浸膏",
+					"name":"金银花第二次提取液",
+					"colName":"",
+					"unit":"体积",
+					"unit_flag":""
+				},
+				{
+					"name":"金银花三效浓缩浸膏",
 					"colName":"",
 					"unit":"体积",
 					"unit_flag":""
@@ -27,43 +33,19 @@
 				{
 					"name":"金银花浓缩浸膏",
 					"colName":"",
-					"unit":"重量",
+					"unit":"出膏密度",
 					"unit_flag":""
 				},
 				{
-					"name":"挥发油总量",
+					"name":"金银花、青蒿挥发油",
 					"colName":"",
 					"unit":"体积",
 					"unit_flag":""
 				},
 				{
-					"name":"青蒿提取液总量",
-					"colName":"",
-					"unit":"重量",
-					"unit_flag":""
-				},
-				{
-					"name":"青蒿浓缩浸膏",
+					"name":"青蒿提取液",
 					"colName":"",
 					"unit":"体积",
-					"unit_flag":""
-				},
-				{
-					"name":"青蒿调酸上清液",
-					"colName":"",
-					"unit":"体积",
-					"unit_flag":""
-				},
-				{
-					"name":"青蒿醇沉回收浸膏",
-					"colName":"",
-					"unit":"重量",
-					"unit_flag":""
-				},
-				{
-					"name":"金青醇沉上清液",
-					"colName":"",
-					"unit":"重量",
 					"unit_flag":""
 				}
 			]
@@ -74,13 +56,13 @@
 			"intermidates": 
 			[
 				{
-					"name":"栀子提取液",
+					"name":"栀子第一次提取液",
 					"colName":"",
 					"unit":"体积",
 					"unit_flag":""
 				},
 				{
-					"name":"金青醇沉回收浸膏",
+					"name":"栀子第二次提取液",
 					"colName":"",
 					"unit":"重量",
 					"unit_flag":""

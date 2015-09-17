@@ -99,7 +99,11 @@ button,.btn {
 	color: #fff !important;
 	background: url('../icons/btn_bg_1.jpg') repeat-x;
 }
-
+/*.guan-btn {
+	width:100px;
+	border:1px solid #ddd;
+	background:#eee;
+}*/
 /*按钮内边框，火狐浏览器，IE浏览器默认会显示按钮内边框和padding*/
 button::-moz-focus-inner,input::-moz-focus-inner {
 	padding: 0;
@@ -146,7 +150,16 @@ textarea {
 	height: 30px;
 	font-size: 14px;
 }
-
+#batchNos {
+	height:23px;
+	line-height:25px;
+	width:185px;
+	font-size: 14px;
+	text-align:center;
+	
+	border:1px solid #ddd;
+	border-radius:5px;
+}
 .title{
 	font-size: 14px;
 	font-family: "微软雅黑";
@@ -705,4 +718,12 @@ div.intro {
 	margin-top:30px;
 	margin-bottom:50px;
 	
+}
+.guan-list {
+	display:inline-block;
+	vertical-align:middle;
+}
+.guan-list li {
+	float:left;
+	margin-right:10px;
 }

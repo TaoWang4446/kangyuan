@@ -1,14 +1,23 @@
 package com.kanion.www.controller;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.alibaba.fastjson.JSONArray;
+import com.kanion.www.model.JyhCy;
 import com.kanion.www.model.RsdExtraction;
+import com.kanion.www.service.JyhCyService;
+import com.kanion.www.service.MidIndexService;
+import com.kanion.www.service.YieldAnalysisService;
 
 /**
  * 
@@ -17,10 +26,60 @@ import com.kanion.www.model.RsdExtraction;
  */
 
 @Controller
-@RequestMapping("rsd")
+@RequestMapping("rsdAnalysis")
 public class RsdController {
+	private String tableName = "";
+	@Autowired
+	private YieldAnalysisService mYieldAnalysisService;
+	@Autowired
+	private MidIndexService midIndexService;
 	
+	@Autowired
+	private JyhCyService jyhCyService;
+	
+	@RequestMapping("init")
+	public ModelAndView init(HttpServletRequest request,
+			HttpServletResponse response){
+		ModelAndView returnView=new ModelAndView("rsdAnalysis");
+		List<String> typeNames=mYieldAnalysisService.getTypeNames();
+		returnView.addObject("typeNames", typeNames);
+		return returnView;
+	}
 	//获取中间体
+	@RequestMapping("getmidname")
+	@ResponseBody
+	public String getMidName(@RequestParam(value="productName",required=true)String productName ) {
+		List<String>midNames = midIndexService.getMidName(productName);
+		return JSONArray.toJSONString(midNames);
+	}
+	//获取表名
+	@RequestMapping("getTableName")
+	@ResponseBody
+	public String getTableName(@RequestParam(value="productName", required=true)String productName,
+			@RequestParam(value="midName", required=true)String midName) {
+		tableName = midIndexService.getTableName(productName, midName);
+		System.out.println(tableName);
+		return tableName;
+	}
+	
+	@RequestMapping("getParamByPmMid")
+	@ResponseBody
+	public String getParamByPmMid(@RequestParam(value="productName", required=true)String productName,
+			@RequestParam(value="midName", required=true)String midName) {
+		List<String>paramNames = midIndexService.getParamByPmMid(productName, midName);
+		return JSONArray.toJSONString(paramNames);
+	}
+	
+	@RequestMapping("getData")
+	@ResponseBody
+	public String getData(@RequestParam(value="minBatchNo",required=true)String minBatchNo,
+			@RequestParam(value="maxBatchNo", required=true)String maxBatchNo,HttpServletRequest request){
+		List<JyhCy> volList = jyhCyService.getZlyTotalVol("KANION." + tableName, "'"+minBatchNo+"'", "'"+maxBatchNo+"'");
+		String volString = JSONArray.toJSONString(volList);
+		return volString;
+	}
+	
+	
 	@RequestMapping("/rsdExtraction")
 	@ResponseBody
 	public String rsdExtraction(HttpServletRequest request,HttpServletResponse response){

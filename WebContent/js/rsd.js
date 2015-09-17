@@ -57,7 +57,8 @@ var option = {
 	};
 
 $(document).ready(function(){
-	var url = $("#basePath").val()+"rsd/rsdExtraction.json";
+	var $pm = $('.pinming');
+	var url = $("#basePath").val()+"rsdAnalysis/rsdExtraction.json";
 	$.ajax({
 		async:false,
 		type:'get',
@@ -88,7 +89,86 @@ $(document).ready(function(){
 		option.series[0].name = pm;
 		chart1 = new Highcharts.Chart(option);
 		
-	});
+	})
+	.on('change','.pinming', function(){
+		var pm = $.trim($(this).find('option:selected').text()),
+			$midPro = $('.midPro'),
+			$param = $('.param'),
+			url = $("#basePath").val()+"rsdAnalysis/getmidname.json",
+			data = {};
+		data.productName = pm;
+		$midPro.html('');
+		$midPro.append('<option value=""-1>请选择</option>');
+		$param.html('');
+		$param.append('<option value="-1">请选择</option>');
+		$.ajax({
+			type:'POST',
+			url: url,
+			data:data,
+			async: false,
+			dataType: 'text',
+			success: function(data) {
+				data = $.parseJSON(data);
+				$(data).each(function(index,item) {
+					$midPro.append('<option value="' + index +'">' + item + '</option>');
+				})
+			},
+			error: function() {
+				alert('获取中间体失败，请联系管理员！');
+			}
+		})
+	})
+	.on('change','.midPro', function() {
+		var pm = $.trim($('.pinming').find('option:selected').text()),
+			midName = $.trim($(this).find('option:selected').text()),
+			$param = $('.param'),
+			url = $("#basePath").val()+"rsdAnalysis/getParamByPmMid.json",
+			data = {};
+		data.productName = pm;
+		data.midName = midName;
+		$param.html('');
+		$param.append('<option value="-1">请选择</option>');
+		$.ajax({
+			type:'POST',
+			url:url,
+			data:data,
+			dataType: 'text',
+			success: function(data) {
+				data = $.parseJSON(data);
+				$(data).each(function(index,item) {
+					$param.append('<option value="' + index +'">' + item + '</option>');
+				})
+			},
+			error:function() {
+				alert('获取参数失败，请与管理员联系!');
+			}
+		})
+
+	})
+	.on('change', '.param', function() {
+		var pm = $.trim($('.pinming').find('option:selected').text()),
+			midName = $.trim($('.midPro').find('option:selected').text()),
+			url = $("#basePath").val()+"rsdAnalysis/getTableName.json",
+			data = {};
+		data.productName = pm;
+		data.midName = midName;
+		$.ajax({
+			type:'POST',
+			url:url,
+			data:data,
+			dataType: 'text',
+			success: function(data) {
+				console.log(data);
+				// data = $.parseJSON(data);
+				// $(data).each(function(index,item) {
+				// 	$param.append('<option value="' + index +'">' + item + '</option>');
+				// })
+			},
+			error:function() {
+				alert('获取数据表名失败，请与管理员联系!');
+			}
+		})
+	})
 });
 //动态创建显示中间值的表格
 function createTable(rsdObject) {
