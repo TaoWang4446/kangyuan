@@ -81,6 +81,8 @@ public class YieldAnalysisController {
 	@ResponseBody
 	public String getVol(@RequestParam(value="minBatchNo",required=true)String minBatchNo,
 			@RequestParam(value="maxBatchNo", required=true)String maxBatchNo,HttpServletRequest request){
+		System.out.println(minBatchNo.compareTo(maxBatchNo));
+		System.out.println(maxBatchNo);
 		List<JyhCy> volList = jyhCyService.getZlyTotalVol("KANION." + tableName, "'"+minBatchNo+"'", "'"+maxBatchNo+"'");
 		String volString = JSONArray.toJSONString(volList);
 		return volString;

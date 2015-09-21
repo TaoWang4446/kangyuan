@@ -60,10 +60,10 @@
       and N_TIMES = #{nTimes,jdbcType=DECIMAL}
   </select>
   <select id="selectByBatchNos" resultMap="BaseResultMap" >
-  	select * from ${tableName} where S_BATCH_NUMBER &gt;= ${minBatchNo} and S_BATCH_NUMBER &lt;= ${maxBatchNo}  order by S_BATCH_NUMBER 
+  	select * from ${tableName} where (S_BATCH_NUMBER &gt;= ${minBatchNo} or S_BATCH_NUMBER = ${minBatchNo}) and (S_BATCH_NUMBER &lt;= ${maxBatchNo} or S_BATCH_NUMBER = ${minBatchNo} )order by S_BATCH_NUMBER 
   </select>
   <select id="selectByBatNoPm" resultMap="BaseResultMap">
-  	select * from ${tableName} where S_BATCH_NUMBER &gt;= ${minBatchNo} and S_BATCH_NUMBER &lt;= ${maxBatchNo} and 
+  	select * from ${tableName} where (S_BATCH_NUMBER &gt;= ${minBatchNo} or S_BATCH_NUMBER = ${minBatchNo}) and (S_BATCH_NUMBER &lt;= ${maxBatchNo}  or S_BATCH_NUMBER = ${minBatchNo} )
   	S_PRODUCT_NAME = #{productName}  order by S_BATCH_NUMBER
   </select>
   
