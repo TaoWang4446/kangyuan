@@ -150,6 +150,11 @@ textarea {
 	height: 30px;
 	font-size: 14px;
 }
+.ph {
+	width:180px;
+	height:24px;
+	border:1px solid #ddd;
+}
 #batchNos {
 	height:23px;
 	line-height:25px;
@@ -727,3 +732,4 @@ div.intro {
 	float:left;
 	margin-right:10px;
 }
+
