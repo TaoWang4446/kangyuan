@@ -119,7 +119,8 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 		$phases = $('#phases'),
 		$arguments = $('#arguments'),
 		$batchNos = $('#batchNos'),
-		series = [];
+		series = [],
+		tickInterval = 5;
 	$(function(){
 		var pageName=$("#pageName").val();
 		loadHead(pageName);
@@ -137,7 +138,8 @@ $("#trendAnalysisBtn").click(function(){
 		batchNo = $.trim($batchNos.val()),
 		data = {},
 	    $guansSelect = $('.guan-list').find('input:checked');
-	    series = [];
+	    series = [],
+	    one = true;
 	$guansSelect.each(function(i, item) {
 		var obj = {
 			name:$(this).val(),
@@ -180,6 +182,7 @@ $("#trendAnalysisBtn").click(function(){
 		async: false,
 		dataType: 'text',
 		success: function(data) {
+			one = true;
 			data = $.parseJSON(data);
 			//console.log(data);
 			optionData = [];
@@ -193,9 +196,14 @@ $("#trendAnalysisBtn").click(function(){
 					}
 				})
 				optionData.push(item.N_VALUE);
-				cagries.push(timeFormat(item.TM_CURT));
+
+				var datetime = timeFormat(item.TM_CURT);
+				if(one) {
+					title += '(' + datetime.date +')';
+					one = false;
+				}
+				cagries.push(datetime.time);
 			})
-			console.log(series);
 			drawAction();
 			showHighcharts($('#container'));
 
@@ -325,9 +333,16 @@ $('.intro').on('change', '#processes', function() {
 
 function timeFormat(datetime) {
 	// var tt=new Date(parseInt(datetime)).toLocaleString().replace(/年|月/g, "-").replace(/日/g, " ") ;
-	var tt = new Date(parseInt(datetime));
-	return tt.getFullYear() + "/" + (tt.getMonth() + 1) + "/" + tt.getDate() +
-			"_" + tt.getHours() + ":" + tt.getMinutes() + ":" + tt.getSeconds();
+	var tt = new Date(parseInt(datetime)),
+		hour = tt.getHours() < 10? '0' + tt.getHours():tt.getHours(),
+		min = tt.getMinutes() < 10? '0' + tt.getMinutes():tt.getMinutes();
+
+	return  {
+		date:tt.getFullYear() + "/" + (tt.getMonth() + 1) + "/" + tt.getDate(),
+		time:hour + ':' + min
+	}
+	// return tt.getFullYear() + "/" + (tt.getMonth() + 1) + "/" + tt.getDate() +
+	// 		"    " + tt.getHours() + ":" + tt.getMinutes() + ":" + tt.getSeconds();
 	
 }
 
@@ -346,6 +361,7 @@ function drawAction() {
         	}
         },
         xAxis: {
+        	tickInterval:tickInterval,
         	title: {
                 text: '生产过程时间点',
                 style:{

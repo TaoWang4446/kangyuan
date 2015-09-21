@@ -58,8 +58,8 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 								</dd>
 								<dd>							
 									<i class="w100 dis-ib">批号</i>
-									<input type="text" class="defaultOption minBatchNo">
-									<input type="text" class="defaultOption maxBatchNo">
+									<input type="text" class="defaultOption minBatchNo ph">
+									<input type="text" class="defaultOption maxBatchNo ph">
 									<!-- <select class="defaultOption minBatchNo">
 										<option>Z150501</option>
 										<option>Z150502</option>
@@ -135,6 +135,7 @@ var option = {
 	        	text:''
 	        },
 	        xAxis: {
+	        	tickInterval:2,
 	            categories: []
 	        },
 	        yAxis: {
@@ -176,7 +177,7 @@ $("#yieldAnalysisBtn").click(function(){
 		 data = {};
 	data.minBatchNo = $.trim(minBatchNo);
 	data.maxBatchNo = $.trim(maxBatchNo);
-	option.yAxis.title = $.trim($('#intermidates').val());
+	option.yAxis.title.text = $.trim($('#intermidates').val()) + ' 体积(L)';
 	$.each(option.series,function(i,item) {
 		item.data = [];
 	});
