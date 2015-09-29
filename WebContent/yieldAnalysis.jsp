@@ -170,7 +170,8 @@ var option = {
 	        }]
 	},
 	basePath=$("#basePath").val(),
-	chart;
+	chart,
+	batchArray = [];
 $("#yieldAnalysisBtn").click(function(){
 	var  minBatchNo = $('.minBatchNo').val(),
 		 maxBatchNo = $('.maxBatchNo').val(),
@@ -191,9 +192,13 @@ $("#yieldAnalysisBtn").click(function(){
 		success : function(data) {
 			console.log(data);
 			var one = true;
+			batchArray = [];
 			option.xAxis.categories = [];
 			option.series[0].data = [];
 			$(data).each(function(i,item) {
+				if($.inArray(item.sBatchNumber, batchArray) === -1) {
+					batchArray.push(item.sBatchNumber);
+				}
 				if(item.fYyQty) {
 					var datetime =  dateFormat(item.tmCyEnd);
 					if(one) {
@@ -208,6 +213,8 @@ $("#yieldAnalysisBtn").click(function(){
 					option.series[0].data.push(item.fYyQty);
 				}
 			})
+
+			console.log(batchArray);
 		}
 	});
 	console.log(option.series[0].data);

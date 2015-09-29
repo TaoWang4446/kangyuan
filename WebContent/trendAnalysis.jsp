@@ -12,11 +12,12 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>康缘PKS统计挖掘系统</title>
 <link rel="stylesheet" type="text/css" href="../CSS/global.css">
-	<script type="text/javascript" src="../js/jquery-1.7.1.js"></script>
-	<script type="text/javascript" src="../js/jquery-extend.js"></script>
-	<script type="text/javascript" src="../js/highcharts.js"></script>
-	<script type="text/javascript" src="../js/exporting.js"></script>
-	<script type="text/javascript" src="../js/util.js"></script>
+<link rel="stylesheet" type="text/css" href="../CSS/global_zs.css">
+<script type="text/javascript" src="../js/jquery-1.7.1.js"></script>
+<script type="text/javascript" src="../js/jquery-extend.js"></script>
+<script type="text/javascript" src="../js/highcharts.js"></script>
+<script type="text/javascript" src="../js/exporting.js"></script>
+<script type="text/javascript" src="../js/util.js"></script>
 </head>
 <body>
 
@@ -68,6 +69,11 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 									<option >请选择</option>
 								</select> -->
 								<input type="text" class="defaultOption" id="batchNos">
+								<ul class="bno-ls">
+									<li class="bno ls-1">z150813</li>
+									<li class="bno ls-2">z150828</li>
+									<li class="bno ls-3">z150922</li>
+								</ul>
 							</dd>
 							<dd>
 
@@ -120,7 +126,8 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 		$arguments = $('#arguments'),
 		$batchNos = $('#batchNos'),
 		series = [],
-		tickInterval = 5;
+		tickInterval = 5,
+		batchArray = [];
 	$(function(){
 		var pageName=$("#pageName").val();
 		loadHead(pageName);
@@ -140,6 +147,7 @@ $("#trendAnalysisBtn").click(function(){
 	    $guansSelect = $('.guan-list').find('input:checked');
 	    series = [],
 	    one = true;
+	  console.log('111');
 	$guansSelect.each(function(i, item) {
 		var obj = {
 			name:$(this).val(),
@@ -184,7 +192,7 @@ $("#trendAnalysisBtn").click(function(){
 		success: function(data) {
 			one = true;
 			data = $.parseJSON(data);
-			//console.log(data);
+			console.log(data);
 			optionData = [];
 			cagries = [];
 			unit = data[0].S_UNIT;
@@ -228,6 +236,7 @@ $("#typeNames").on('change', function() {
 	$batchNos.empty();
 	$arguments.empty();
 	$('.guan-list').html('');
+	batchArray = [];
 	$process.append('<option value="-1">请选择</option>');
 	$batchNos.append('<option value="-1">请选择</option>');
 	$phases.append('<option value="-1">请选择</option>');
@@ -240,16 +249,21 @@ $("#typeNames").on('change', function() {
 		dataType: 'text',
 		success: function(data){
 			data = $.parseJSON(data);
+			console.log('data:' + data.length);
 			$(data).each( function(index, item) {
 				if(item.S_PROCESS_NAME !== proName) {
 					$process.append('<option>' + $.trim(item.S_PROCESS_NAME) + '<option/>');
 					proName = item.S_PROCESS_NAME;
 				}
+				batchArray.push(item.S_BATCH_NUMBER);
 				// $batchNos.append('<option>' + $.trim(item.S_BATCH_NUMBER) + '<option/>');
-				console.log(item.S_BATCH_NUMBER);
+				// console.log(item.S_BATCH_NUMBER);
 			})
 		}
 	})
+    batchArray.sort();
+	console.log(batchArray);
+	// console.log('batch: ' + batchArray.length);
 	
 });
 
@@ -296,7 +310,6 @@ $('.intro').on('change', '#processes', function() {
 			})
 		}
 	})
-
 })
 .on('click','#batchNos', function() {
 	$('.guan-list').html('');
@@ -329,6 +342,36 @@ $('.intro').on('change', '#processes', function() {
 			})
 		}
 	})
+})
+.on('keyup', '#batchNos', function() {
+	var btno = $.trim($(this).val()),
+		len = batchArray.length,
+		i = 0,
+		$bls = $('.bno-ls');
+	$bls.empty();
+	$bls.hide();
+	if(btno && (btno.length > 6)) {
+	    var flag = false;
+	    
+		for(i=0; i < len; i++) {
+			if(batchArray[i].indexOf(btno) > -1) {
+				$bls.show();
+				flag = true;
+				$bls.append('<li class="bno ls-'+ i +'">' + batchArray[i] + '</li>');
+				// console.log(batchArray[i]);
+			}
+		}
+	}
+})
+.on('focus', '#batchNos', function() {
+	var btno = $.trim($(this).val());
+	if(btno && (btno.length > 6)) {
+		$('.bno-ls').show();
+	}
+})
+.on('click','.bno', function() {
+	$('#batchNos').val($(this).html());
+	$('.bno-ls').hide();
 })
 
 function timeFormat(datetime) {

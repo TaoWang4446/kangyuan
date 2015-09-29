@@ -36,7 +36,28 @@ fieldset.zs{
 	width:80px;
 	height:20px;
 	border:1px solid #ddd;
+
 	padding:0 5px;
 }
-
+.bno-ls {
+	display:none;
+	border:1px solid #ccc;
+	width:200px;
+	margin-top:-3px;
+	margin-left:103px;
+	font-size:14px;
+	border-radius:5px;
+}
+.bno {
+	line-height:24px;
+	border-bottom:1px solid #ccc;
+	padding:0 10px;
+	cursor:pointer;
+}
+.bno:hover{
+	background:#eee;
+}
+.bno:last-child {
+	border-bottom:none;
+}
 
